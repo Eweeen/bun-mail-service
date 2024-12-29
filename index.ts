@@ -12,7 +12,7 @@ const mailjet = new Mailjet({
 });
 
 Bun.serve({
-  port: 3000,
+  port: 3001,
   async fetch(req: Request) {
     // Only allow POST requests
     if (req.method !== "POST") {
