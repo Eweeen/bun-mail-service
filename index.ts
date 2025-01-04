@@ -11,26 +11,55 @@ const mailjet = new Mailjet({
   apiSecret: process.env.MAILJET_SECRET,
 });
 
+/**
+ * Create a response object
+ * @param {string} body - The response body
+ * @param {number} status - The response status
+ * @returns {Response} - The response object
+ */
+function response(body: string, status: number): Response {
+  return new Response(body, {
+    status,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
+}
+
 Bun.serve({
   port: 3001,
   async fetch(req: Request) {
+    if (req.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204, // Ou 200
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          // Access-Control-Max-Age (facultatif)
+          // pour "cacher" la réponse preflight
+          // "Access-Control-Max-Age": "86400",
+        },
+      });
+    }
+
     // Only allow POST requests
     if (req.method !== "POST") {
-      return new Response("Method not allowed", { status: 405 });
+      return response("Method not allowed", 405);
     }
 
     // Only allow application/json content type
     if (!req.headers.get("Content-Type")?.includes("application/json")) {
-      return new Response("Content-Type must be application/json", {
-        status: 400,
-      });
+      return response("Content-Type must be application/json", 400);
     }
 
     const data: Email = await req.json();
 
     // Check if the request has the required fields
     if (!data.name || !data.subject || !data.message) {
-      return new Response("Missing required fields", { status: 400 });
+      return response("Missing required fields", 400);
     }
 
     // Send the email
@@ -63,10 +92,10 @@ Bun.serve({
       };
 
       await fetch(url, config);
-      return new Response("Error sending email", { status: 500 });
+      return response("Error sending email", 500);
     }
 
     // Return a success message
-    return new Response("Email sent", { status: 200 });
+    return response("Email sent", 200);
   },
 });
