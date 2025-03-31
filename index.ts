@@ -75,25 +75,25 @@ Bun.serve({
     });
 
     // If the email was not sent, send a message to a Discord webhook
-    if (mail.response.status !== 200) {
-      const id = process.env.WEBHOOK_ID;
-      const token = process.env.WEBHOOK_TOKEN;
-      const url = `https://discord.com/api/webhooks/${id}/${token}`;
+    // if (mail.response.status !== 200) {
+    const id = process.env.WEBHOOK_ID;
+    const token = process.env.WEBHOOK_TOKEN;
+    const url = `https://discord.com/api/webhooks/${id}/${token}`;
 
-      const body = JSON.stringify({
-        username: "Webhook Mailjet",
-        content: `**name**: ${process.env.MAIL_USER}\n**subject**: ${data.subject}\n**message**: ${data.message}`,
-      });
+    const body = JSON.stringify({
+      username: "Webhook Mailjet",
+      content: `**name**: ${process.env.MAIL_USER}\n**subject**: ${data.subject}\n**message**: ${data.message}`,
+    });
 
-      const config = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body,
-      };
+    const config = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+    };
 
-      await fetch(url, config);
-      return response("Error sending email", 500);
-    }
+    await fetch(url, config);
+    // return response("Error sending email", 500);
+    // }
 
     // Return a success message
     return response("Email sent", 200);
