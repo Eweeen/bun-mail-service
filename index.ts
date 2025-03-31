@@ -82,7 +82,7 @@ Bun.serve({
 
     const body = JSON.stringify({
       username: "Webhook Mailjet",
-      content: `**name**: ${process.env.MAIL_USER}\n**subject**: ${data.subject}\n**message**: ${data.message}`,
+      content: `**name**: ${data.name}\n**subject**: ${data.subject}\n**message**: ${data.message}`,
     });
 
     const config = {
